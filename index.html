@@ -29,8 +29,10 @@
                     <th>Team name 2</th>
                     <th>Odds</th>
                 </table>
-                <div class="footer container">
-                    <input type="button" class="btn btn-primary" value="Place bet"/>
+                <div class="footer container row">
+                    <input class="col-md-4" type="number" id="stake" class="form-control" placeholder="Stake" onkeyup="updateStake(this)"/>
+                    <div class=" col-md-3" >Win amount: <span id="amountToWin">0</span></div>
+                    <input type="button" class="btn btn-primary col-md-3" value="Place bet"/>
                 </div>
             </div>
     </body>
@@ -41,14 +43,14 @@
             var text = "";
             var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 15; i++)
                 text += possible.charAt(Math.floor(Math.random() * possible.length));
 
             return text;
             }
 
             function generateRandomOdd(){
-                return (Math.random() * 100).toFixed(2);
+                return (Math.random() * 20).toFixed(2)*1;
             }
 
             function addSelection(){
@@ -79,6 +81,8 @@
             function updateSelection(isOddsUpdate){
                 var selection = BetSlipController.state.selections[getRandomInt(0,BetSlipController.state.selections.length-1)];
                 
+                if(!selection) return;
+
                 var updatedSelection = {
                     id: selection.id,
                 }
@@ -95,6 +99,11 @@
                 }
 
                 BetSlipController.updateSelection(updatedSelection);
+            }
+
+            function updateStake(element){
+                var stake = element.value*1;
+                BetSlipController.updateStake(stake);
             }
 
             function getRandomInt(min, max) {

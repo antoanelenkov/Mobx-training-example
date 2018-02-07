@@ -44,6 +44,11 @@ var BetSlipView = (function(){
         });
     }
 
+    instance.updateAmountToWin = function(amount){
+        var el = document.getElementById("amountToWin");
+        el && (el.innerHTML = amount);
+    }
+
     function updateElement(id, prefix, value) {
         var element = document.getElementById(prefix   + "_" + id);
 

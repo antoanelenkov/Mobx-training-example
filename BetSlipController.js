@@ -4,9 +4,20 @@ var      BetSlipController= (function BetSlipController() {
     instance.state = {};
 
     instance.state.selections = mobx.observable([]);
+    instance.state.stake = mobx.observable(0);
+    instance.state.amountToWin = mobx.computed(()=> 
+        {
+            var odds = instance.state.selections.map((sel)=> sel.Odds); 
+            var stake = instance.state.stake.get();
+            return odds.length ? (odds.reduce((x,y)=>x+y)*stake).toFixed(2) : 0;
+        })
 
 
     //MOBX ACTIONS
+    instance.updateStake = mobx.action.bound(function(stake){
+        instance.state.stake.set(stake);
+    });
+
     instance.addSelection = mobx.action.bound(function (selection) {
         var selectionToAdd = {};
 
@@ -35,6 +46,7 @@ var      BetSlipController= (function BetSlipController() {
     });
 
     mobx.observe(instance.state.selections,addRemoveSelections);
+    instance.state.amountToWin.observe((change)=>{BetSlipView.updateAmountToWin(change.newValue)});
 
     // MOBX REACTIONS
     addReaction(updateTeamNamesMap, BetSlipView.updateTeamNames);
