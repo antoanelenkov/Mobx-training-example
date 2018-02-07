@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mobx/3.5.1/mobx.umd.js"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script> 
+        <script src="BetSlipView.js"></script>
+        <script src="BetSlipController.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="mobx-betslip.css">
+    </head>
+    <body>
+            <div class="utility container">
+                    <input type="button" class="btn btn-primary" value="Add selection" onclick="addSelection()"/>
+                    <input type="button" class="btn btn-success" value="Update Odds" onclick="updateOdds()"/>
+                    <input type="button" class="btn btn-success" value="Update Teams" onclick="updateTeams()"/>
+                    <input type="button" class="btn btn-danger" value="Remove selection" onclick="removeSelection()"/>
+            </div>
+            </br>   
+            <div id="betslip" class="container">
+                <table id="selections" class="table table-striped selections">
+                    <th>Team name 1</th>
+                    <th>Team name 2</th>
+                    <th>Odds</th>
+                </table>
+                <div class="footer container">
+                    <input type="button" class="btn btn-primary" value="Place bet"/>
+                </div>
+            </div>
+    </body>
+        <script>
+            var id=0;
+
+            function generateTeamName() {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            for (var i = 0; i < 5; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            return text;
+            }
+
+            function generateRandomOdd(){
+                return (Math.random() * 100).toFixed(2);
+            }
+
+            function addSelection(){
+                var selection={
+                    id:++id,
+                    Team1Name:generateTeamName(),
+                    Team2Name:generateTeamName(),
+                    Odds:generateRandomOdd()
+                }
+
+                BetSlipController.addSelection(selection);
+            }
+
+            function removeSelection(){
+                var selection = BetSlipController.state.selections[0];
+
+                selection && BetSlipController.removeSelection(selection.id);
+            }
+
+            function updateOdds(){
+                updateSelection(true);
+            }
+
+            function updateTeams(){
+                updateSelection();
+            }
+
+            function updateSelection(isOddsUpdate){
+                var selection = BetSlipController.state.selections[getRandomInt(0,BetSlipController.state.selections.length-1)];
+                
+                var updatedSelection = {
+                    id: selection.id,
+                }
+
+                if(isOddsUpdate){
+                    updatedSelection.Odds = generateRandomOdd();
+                    updatedSelection.Team1Name = selection.Team1Name;
+                    updatedSelection.Team2Name = selection.Team2Name;
+                }
+                else{
+                    updatedSelection.Odds = selection.Odds;
+                    updatedSelection.Team1Name = generateTeamName();
+                    updatedSelection.Team2Name = generateTeamName();
+                }
+
+                BetSlipController.updateSelection(updatedSelection);
+            }
+
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+        </script>
+</html>
