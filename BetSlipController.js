@@ -1,21 +1,21 @@
 var      BetSlipController= (function BetSlipController() {
     var instance = {};
 
-    instance.state = {};
+    instance = {};
 
-    instance.state.selections = mobx.observable([]);
-    instance.state.stake = mobx.observable(0);
-    instance.state.amountToWin = mobx.computed(()=> 
+    instance.selections = mobx.observable([]);
+    instance.stake = mobx.observable(0);
+    instance.amountToWin = mobx.computed(()=> 
         {
-            var odds = instance.state.selections.map((sel)=> sel.Odds); 
-            var stake = instance.state.stake.get();
+            var odds = instance.selections.map((sel)=> sel.Odds); 
+            var stake = instance.stake.get();
             return odds.length ? (odds.reduce((x,y)=>x+y)*stake).toFixed(2) : 0;
         })
 
 
     //MOBX ACTIONS
     instance.updateStake = mobx.action.bound(function(stake){
-        instance.state.stake.set(stake);
+        instance.stake.set(stake);
     });
 
     instance.addSelection = mobx.action.bound(function (selection) {
@@ -26,17 +26,17 @@ var      BetSlipController= (function BetSlipController() {
         selectionToAdd.Team1Name = selection.Team1Name;
         selectionToAdd.Team2Name = selection.Team2Name;
 
-        instance.state.selections.push(selectionToAdd);
+        instance.selections.push(selectionToAdd);
     });
 
     instance.removeSelection = mobx.action.bound(function (id) {
-        selection = instance.state.selections.find(function (sel) { return sel.id == id });
+        selection = instance.selections.find(function (sel) { return sel.id == id });
 
-        selection && instance.state.selections.remove(selection);
+        selection && instance.selections.remove(selection);
     });
 
     instance.updateSelection = mobx.action.bound(function (selection) {
-        var selectionToUpdate = instance.state.selections.find(function (x) { return x.id == selection.id });
+        var selectionToUpdate = instance.selections.find(function (x) { return x.id == selection.id });
 
         if (selectionToUpdate) {
             selectionToUpdate.Odds = selection.Odds;
@@ -45,15 +45,22 @@ var      BetSlipController= (function BetSlipController() {
         }
     });
 
-    mobx.observe(instance.state.selections,addRemoveSelections);
-    instance.state.amountToWin.observe((change)=>{BetSlipView.updateAmountToWin(change.newValue)});
 
     // MOBX REACTIONS
+    // using observe, because object passed to handler has information for added/deleted items
+    mobx.observe(instance.selections,addRemoveSelections);
+    mobx.observe(instance.amountToWin,updateWinAmount);
+
     addReaction(updateTeamNamesMap, BetSlipView.updateTeamNames);
     addReaction(updateOddsMap, BetSlipView.updateOdds);
 
-    function addSelection(selection){
-      
+    function addReaction(mapFunction, callback) {
+        mobx.reaction(mapFunction, callback);
+    }
+
+    //REACTIONS HANDLERS
+    function updateWinAmount(changeObj){
+        BetSlipView.updateAmountToWin(changeObj.newValue);
     }
 
     function addRemoveSelections(chnageObj){
@@ -61,18 +68,14 @@ var      BetSlipController= (function BetSlipController() {
         chnageObj.removed.forEach(x=> BetSlipView.removeSelection(x));    
     }
 
-    function addReaction(mapFunction, callback) {
-        mobx.reaction(mapFunction, callback);
-    }
-
     function updateTeamNamesMap(a,b) {
-        return instance.state.selections.map(function (x) {
+        return instance.selections.map(function (x) {
             return { Team1Name: x.Team1Name, Team2Name: x.Team2Name, id: x.id }
         });
     };
 
     function updateOddsMap() {
-        return instance.state.selections.map(function (x) {
+        return instance.selections.map(function (x) {
             return { Odds: x.Odds, id: x.id }
         });
     };

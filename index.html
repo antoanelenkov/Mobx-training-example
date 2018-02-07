@@ -65,7 +65,7 @@
             }
 
             function removeSelection(){
-                var selection = BetSlipController.state.selections[0];
+                var selection = BetSlipController.selections[0];
 
                 selection && BetSlipController.removeSelection(selection.id);
             }
@@ -79,7 +79,7 @@
             }
 
             function updateSelection(isOddsUpdate){
-                var selection = BetSlipController.state.selections[getRandomInt(0,BetSlipController.state.selections.length-1)];
+                var selection = BetSlipController.selections[getRandomInt(0,BetSlipController.selections.length-1)];
                 
                 if(!selection) return;
 
