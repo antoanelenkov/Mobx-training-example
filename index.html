@@ -16,6 +16,9 @@
         <link rel="stylesheet" href="mobx-betslip.css">
     </head>
     <body>
+        <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-5">
             <div class="utility container">
                     <input type="button" class="btn btn-primary" value="Add selection" onclick="addSelection()"/>
                     <input type="button" class="btn btn-success" value="Update Odds" onclick="updateOdds()"/>
@@ -35,8 +38,13 @@
                     <input type="button" class="btn btn-primary col-md-3" value="Place bet"/>
                 </div>
             </div>
+        </div>
+        <div class="col-md-3"></div>
+        </div>
     </body>
         <script>
+            mobx.useStrict(true);
+            
             var id=0;
 
             function generateTeamName() {
