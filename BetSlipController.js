@@ -1,8 +1,6 @@
 var      BetSlipController= (function BetSlipController() {
     var instance = {};
 
-    instance = {};
-
     instance.selections = mobx.observable([]);
     instance.stake = mobx.observable(0);
     instance.amountToWin = mobx.computed(()=> 
