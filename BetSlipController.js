@@ -1,5 +1,5 @@
 var      BetSlipController= (function BetSlipController() {
-    var instance = {};
+    var instance = {};  
 
     instance.selections = mobx.observable([]);
     instance.stake = mobx.observable(0);
@@ -8,7 +8,7 @@ var      BetSlipController= (function BetSlipController() {
             var odds = instance.selections.map((sel)=> sel.Odds); 
 
             // internal computed function which prevents call of the outter function if there are no odds   
-            var stake = mobx.computed(()=> (odds.length && instance.stake.get()));
+            var stake = mobx.computed(()=> (odds.length && instance.stake.get())).get();
 
             return odds.length ? (odds.reduce((x,y)=>x+y)*stake).toFixed(2) : 0;
         })
